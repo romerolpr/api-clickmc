@@ -22,7 +22,9 @@ const checkError = (body, res) => {
 // cria e exporta todos os métodos do controller
 
 exports.create = (req, res) => {
+	// console.log(req.body)
 	checkError(req.body ? req.body : undefined, res)
+
   User.create({
     name: req.body.name,
     cpf: req.body.cpf,
@@ -39,6 +41,12 @@ exports.create = (req, res) => {
 
 exports.getAll = (req, res) => {
 	User.getAll((err, data) => {
+		if (err) {
+			res.status(500).send({
+				message: `Error while getting users`
+			})
+			return;
+		}
 		result(err, { data: data, res: res })
 	})
 }
@@ -47,20 +55,12 @@ exports.getById = (req, res) => {
 	const id = req.params.id
 	User.getById(id, (err, data) => {
 		if (err) {
-			switch (err.status) {
-				case 404:
-					res.status(404).send({
-						message: `Not found user by id ${id}`
-					})
-					return;
-				default:
-					res.status(500).send({
-						message: `Error while retrieving User by id ${id}`
-					})
-					return;
-			}
+			res.status(500).send({
+				message: `Error while retrieving User by id ${id}`
+			})
+			return;
 		}
-		res.send(data)
+		result(err, { data: data, res: res })
 	})
 }
 exports.updateById = (req, res) => {
@@ -79,21 +79,13 @@ exports.updateById = (req, res) => {
     status: req.body.status != undefined ? req.body.status : 1
   }, (err, data) => {
 		if (err) {
-			switch (err.status) {
-				case 404:
-					res.status(404).send({
-						message: `Not found user by id ${id}`
-					})
-					return;
-				default:
-					res.status(500).send({
-						message: `Error while updating User by id ${id}`,
-						sqlMessage: err.sqlMessage
-					})
-					return;
-			}
+			res.status(500).send({
+				message: `Error while updating User by id ${id}`,
+				sqlMessage: err.sqlMessage
+			});
+			return;
 		}
-		res.send(data)
+		result(err, { data: data, res: res })
 	})
 
 }
@@ -101,18 +93,10 @@ exports.removeById = (req, res) => {
 	const id = req.params.id
 	User.removeById(id, (err, data) => {
 		if (err) {
-			switch (err.status) {
-				case 404:
-					res.status(404).send({
-						message: `Not found user by id ${id}`
-					})
-					return;
-				default:
-					res.status(500).send({
-						message: `Error while deleting User by id ${id}`
-					})
-					return;
-			}
+			res.status(500).send({
+				message: `Error while deleting User by id ${id}`
+			})
+			return;
 		}
 		res.send(data)
 	})

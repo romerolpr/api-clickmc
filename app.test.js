@@ -1,6 +1,22 @@
 const request = require('supertest')
 const app = require('./app')
 
+describe('UPDATE /users', () => {
+	it('(1) should be able to update, and return status code 200', async () => {
+		const response = await request(app)
+		.post('/api/v1/users/1').send({
+			name: 'Joseph Lennon',
+			cpf: '000.000.000-00',
+			email: 'lennon@gmail.com',
+			backdrop: 'f72585',
+			address: 'Av. Pires do Rio, 687',
+			description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+			status: 1
+		})
+		expect(response.status).toBe(200)
+	})
+})
+
 describe('POST /users stress dynamic users', () => {
 	it('(1) should be able to insert new user into database, and return status code 200', async () => {
 		const response = await request(app)

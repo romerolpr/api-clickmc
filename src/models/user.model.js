@@ -3,14 +3,12 @@ const sql = require('../../mysql')
 const checkError = (err, result) => {
 	if (err) {
 		result(err, null)
-		return;
 	}
 }
 
 const resultData = (res, result) => {
 	if (res.length) {
 		result(null, res[0])
-		return;
 	}
 }
 
@@ -24,9 +22,12 @@ User.create = (user, result) => {
 		VALUES (?, ?, ?, ?, ?, ?, ?)`,
 		[user.name, user.cpf, user.email, user.address, user.description, user.backdrop, user.status], 
 		(err, res) => {
-
+	
 		checkError(err, result); // verifica se erro existe
-		result(null, { id: res.insertId, ...user })
+		if (!err) {			
+			result(null, { id: res.insertId, ...user })
+		}
+		
 	})
 }
 
@@ -43,7 +44,7 @@ User.getAll = (result) => {
 		checkError(err, result) // verifica se erro existe
 		result(null, res) // retorna resultado
 
-	})
+	});
 }
 
 User.updateById = (id, user, result) => {
@@ -83,7 +84,6 @@ User.removeById = (id, result) => {
 
 User.removeAll = result => {
   sql.query('DELETE FROM tb_users', (err, res) => {
-    
     checkError(err, result) // verifica se erro existe
     result(null, res);
   })
